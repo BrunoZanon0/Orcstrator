@@ -12,3 +12,11 @@ orchestrator-x/src/vendor/
 orchestrator-x/src/.env
 orchestrator-x/.env
 *.log
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
