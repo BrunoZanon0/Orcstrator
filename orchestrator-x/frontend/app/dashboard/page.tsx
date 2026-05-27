@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -36,6 +37,9 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-white">Orchestrator X</h1>
           <div className="flex gap-4 items-center">
+            <Link href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</Link>
+            <Link href="/pricing" className="text-gray-300 hover:text-white">Pricing</Link>
+            <span className="text-gray-400">|</span>
             <span className="text-gray-300">{user.name}</span>
             <button
               onClick={() => {
@@ -81,6 +85,22 @@ export default function DashboardPage() {
           <div className="mt-4 pt-4 border-t border-gray-700">
             <p className="text-sm text-gray-500">Gateway URL: http://localhost:8000</p>
             <p className="text-sm text-gray-500 mt-1">Environment: Production</p>
+          </div>
+        </div>
+
+        {/* Upgrade Banner */}
+        <div className="mt-8 bg-gradient-to-r from-blue-900/50 to-purple-900/50 p-6 rounded-lg border border-blue-500/30">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold text-white">Upgrade your plan</h3>
+              <p className="text-gray-400 mt-1">Get more requests, routes, and premium features</p>
+            </div>
+            <Link 
+              href="/pricing" 
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              View Plans
+            </Link>
           </div>
         </div>
       </div>

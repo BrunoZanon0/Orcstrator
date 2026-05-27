@@ -29,3 +29,8 @@ class Subscription extends Model
         return $this->belongsTo(Plan::class);
     }
 }
+    
+    protected $fillable = [
+        'company_id', 'plan_id', 'status', 'starts_at', 'ends_at',
+        'cancelled_at', 'payment_method', 'payment_id', 'stripe_id'
+    ];

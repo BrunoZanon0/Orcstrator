@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 
 const plans = [
   {
+    id: 1,
     name: 'Free',
     price: 0,
     priceLabel: 'Free forever',
@@ -16,11 +18,10 @@ const plans = [
       '3 team members',
       '7 days logs',
       'Email support'
-    ],
-    buttonText: 'Get Started',
-    buttonClass: 'bg-gray-600 hover:bg-gray-700'
+    ]
   },
   {
+    id: 2,
     name: 'Pro',
     price: 49,
     priceLabel: 'per month',
@@ -37,11 +38,10 @@ const plans = [
       'Rate limiting',
       'Custom domains'
     ],
-    buttonText: 'Start Pro Trial',
-    buttonClass: 'bg-blue-600 hover:bg-blue-700',
     popular: true
   },
   {
+    id: 3,
     name: 'Enterprise',
     price: 299,
     priceLabel: 'per month',
@@ -57,15 +57,14 @@ const plans = [
       'SLA guarantee',
       'Dedicated support',
       'On-premise option'
-    ],
-    buttonText: 'Contact Sales',
-    buttonClass: 'bg-purple-600 hover:bg-purple-700'
+    ]
   }
 ];
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -74,6 +73,29 @@ export default function PricingPage() {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  const handleSubscribe = async (planId: number, price: number) => {
+    if (price === 0) {
+      // Plano gratuito - redirecionar direto
+      window.location.href = '/dashboard';
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await api.post('/checkout/create-session', {
+        plan_id: planId,
+        billing_cycle: billingCycle
+      });
+      
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Error starting checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getPrice = (plan: typeof plans[0]) => {
     if (plan.name === 'Free') return 0;
@@ -90,7 +112,6 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-white">Orchestrator X</h1>
@@ -98,13 +119,7 @@ export default function PricingPage() {
             <a href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</a>
             <a href="/pricing" className="text-blue-400">Pricing</a>
             {user ? (
-              <button
-                onClick={() => {
-                  localStorage.clear();
-                  window.location.href = '/';
-                }}
-                className="text-red-400"
-              >
+              <button onClick={() => { localStorage.clear(); window.location.href = '/'; }} className="text-red-400">
                 Logout
               </button>
             ) : (
@@ -114,13 +129,11 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Hero */}
       <div className="text-center py-16">
         <h1 className="text-4xl font-bold text-white mb-4">Simple, transparent pricing</h1>
         <p className="text-xl text-gray-400">Choose the plan that's right for you</p>
       </div>
 
-      {/* Billing Toggle */}
       <div className="flex justify-center gap-4 mb-12">
         <button
           onClick={() => setBillingCycle('monthly')}
@@ -145,7 +158,6 @@ export default function PricingPage() {
         </button>
       </div>
 
-      {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-4 pb-16">
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan, index) => (
@@ -171,8 +183,19 @@ export default function PricingPage() {
                 <span className="text-gray-400"> / {getPriceLabel(plan)}</span>
               </div>
               
-              <button className={`w-full py-2 rounded-lg text-white font-medium mb-6 ${plan.buttonClass}`}>
-                {plan.buttonText}
+              <button
+                onClick={() => handleSubscribe(plan.id, getPrice(plan))}
+                disabled={loading}
+                className={`w-full py-2 rounded-lg text-white font-medium mb-6 ${
+                  plan.popular 
+                    ? 'bg-blue-600 hover:bg-blue-700' 
+                    : plan.name === 'Free'
+                    ? 'bg-gray-600 hover:bg-gray-700'
+                    : 'bg-purple-600 hover:bg-purple-700'
+                } disabled:opacity-50`}
+              >
+                {plan.name === 'Free' ? 'Get Started' : 
+                 plan.name === 'Pro' ? 'Start Pro Trial' : 'Contact Sales'}
               </button>
               
               <div className="space-y-3">
