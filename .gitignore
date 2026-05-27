@@ -1,0 +1,14 @@
+# Node
+node_modules/
+.npm/
+.next/
+dist/
+orchestrator-x/frontend/node_modules/
+orchestrator-x/frontend/.next/
+orchestrator-x/frontend/package-lock.json
+
+# PHP
+orchestrator-x/src/vendor/
+orchestrator-x/src/.env
+orchestrator-x/.env
+*.log
