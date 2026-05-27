@@ -21,6 +21,8 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'mobile_phone',
         'jwt_token',
+        'company_id',
+        'role'
     ];
 
     protected $hidden = [
@@ -44,6 +46,12 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email' => $this->email,
             'name' => $this->name,
+            'role' => $this->role
         ];
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }
